@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ActionController {
 
-	private final Producer producer;
+	private final ArtemisProducer artemisProducer;
 
 	@PostMapping
 	@RequestMapping("/sendMessage")
@@ -20,7 +20,7 @@ public class ActionController {
 
 		try {
 
-			producer.send(message);
+			artemisProducer.send(message);
 
 			return new ResponseEntity<>("message sent", HttpStatus.OK);
 

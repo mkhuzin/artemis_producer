@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class Producer {
+public class ArtemisProducer {
 
 	private final ObjectMapper mapper;
 

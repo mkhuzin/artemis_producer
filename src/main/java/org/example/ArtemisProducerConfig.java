@@ -12,7 +12,7 @@ import org.springframework.jms.support.converter.MessageConverter;
 
 @EnableJms
 @Configuration
-public class ProducerConfig {
+public class ArtemisProducerConfig {
 
 	@Bean
 	public ActiveMQConnectionFactory producerActiveMQConnectionFactory() throws JMSException {
