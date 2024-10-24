@@ -19,11 +19,13 @@ public class ArtemisProducerConfig {
 
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
 
-		connectionFactory.setBrokerURL("tcp://localhost:61616");
+		//connectionFactory.setBrokerURL("tcp://localhost:61616");
 
-		connectionFactory.setUser("admin");
+		connectionFactory.setBrokerURL("tcp://localhost:61616?ha=true&sslEnabled=true&keyStorePath=client.ks&keyStorePassword=keystorepass&trustStorePath=client.ts&trustStorePassword=truststorepass");
 
-		connectionFactory.setPassword("adminpass");
+		connectionFactory.setUser("artemis");
+
+		connectionFactory.setPassword("artemis");
 
 		return connectionFactory;
 
