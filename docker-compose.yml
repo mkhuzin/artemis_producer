@@ -10,6 +10,5 @@ services:
     volumes:
       - D:\Artemis\Docker\volume\:/docker_volume
     environment:
-      ARTEMIS_USER: artemis
-      ARTEMIS_PASSWORD: artemis
-      ACTIVEMQ_SSL_OPTS: -Djavax.net.ssl.keyStore=/docker_volume/broker.ks -Djavax.net.ssl.keyStorePassword=keystorepass
+      ARTEMIS_USER: admin
+      ARTEMIS_PASSWORD: adminpass

@@ -26,7 +26,12 @@ public class ActionController {
 
 		} catch (Exception exception) {
 
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			exception.printStackTrace();
+
+			return new ResponseEntity<>(
+					exception.getMessage(),
+					HttpStatus.INTERNAL_SERVER_ERROR
+			);
 
 		}
 
