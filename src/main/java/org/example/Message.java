@@ -11,8 +11,6 @@ public class Message {
 
 	private String name;
 
-	private String email;
-
-	private String website;
+	private String surname;
 
 }

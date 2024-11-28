@@ -1,7 +1,10 @@
 package org.example;
 
 import jakarta.jms.JMSException;
+import lombok.Getter;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
@@ -10,34 +13,38 @@ import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConverter;
 
+@Getter
 @EnableJms
 @Configuration
 public class ArtemisProducerConfig {
 
 	@Bean
-	public ActiveMQConnectionFactory producerActiveMQConnectionFactory() throws JMSException {
+	@ConditionalOnProperty("artemis.producer.auto-startup")
+	public ActiveMQConnectionFactory connectionFactory() throws JMSException {
 
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
 
 		connectionFactory.setBrokerURL("tcp://localhost:61616");
 
-		connectionFactory.setUser("admin");
+		connectionFactory.setUser("artemis");
 
-		connectionFactory.setPassword("adminpass");
+		connectionFactory.setPassword("artemis");
 
 		return connectionFactory;
 
 	}
 
 	@Bean
-	public JmsTransactionManager transactionManager() throws JMSException {
-		return new JmsTransactionManager(producerActiveMQConnectionFactory());
+	@ConditionalOnBean(ActiveMQConnectionFactory.class)
+	public JmsTransactionManager transactionManager(ActiveMQConnectionFactory connectionFactory) {
+		return new JmsTransactionManager(connectionFactory);
 	}
 
 	@Bean
-	public JmsTemplate jmsTemplate() throws JMSException {
+	@ConditionalOnBean(ActiveMQConnectionFactory.class)
+	public JmsTemplate jmsTemplate(ActiveMQConnectionFactory connectionFactory) {
 
-		JmsTemplate jmsTemplate = new JmsTemplate(producerActiveMQConnectionFactory());
+		JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
 
 		jmsTemplate.setSessionTransacted(true);
 
@@ -46,26 +53,36 @@ public class ArtemisProducerConfig {
 	}
 
 	@Bean
-	public DefaultJmsListenerContainerFactory artemisProducerContainerFactory() throws JMSException {
+	@ConditionalOnBean({
+			ActiveMQConnectionFactory.class,
+			JmsTransactionManager.class,
+			JmsTransactionManager.class,
+			MessageConverter.class
+	})
+	public DefaultJmsListenerContainerFactory containerFactory(
+			ActiveMQConnectionFactory connectionFactory,
+			JmsTransactionManager transactionManager,
+			MessageConverter messageConverter
+	) {
 
-		var producerFactory = new DefaultJmsListenerContainerFactory();
+		DefaultJmsListenerContainerFactory containerFactory = new DefaultJmsListenerContainerFactory();
 
-		producerFactory.setConnectionFactory(producerActiveMQConnectionFactory());
+		containerFactory.setConnectionFactory(connectionFactory);
 
-		producerFactory.setTransactionManager(transactionManager());
+		containerFactory.setTransactionManager(transactionManager);
 
-		producerFactory.setConcurrency("1-1");
+		containerFactory.setConcurrency("1-1");
 
-		producerFactory.setSessionTransacted(true);
+		containerFactory.setSessionTransacted(true);
 
-		producerFactory.setMessageConverter(customMessageConverter());
+		containerFactory.setMessageConverter(messageConverter);
 
-		return producerFactory;
+		return containerFactory;
 
 	}
 
 	@Bean
-	public MessageConverter customMessageConverter() {
+	public MessageConverter messageConverter() {
 		return new CustomMessageConverter();
 	}
 

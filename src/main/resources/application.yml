@@ -1,0 +1,3 @@
+artemis:
+  producer:
+    auto-startup: true
