@@ -18,11 +18,11 @@ public class ActionController {
 
 	@PostMapping
 	@RequestMapping("/sendMessage")
-	public ResponseEntity<String> publish(@RequestBody Message message) {
+	public ResponseEntity<String> publish(@RequestBody Data data) {
 
 		try {
 
-			artemisProducer.send(message);
+			artemisProducer.send(data);
 
 			return new ResponseEntity<>("message sent", HttpStatus.OK);
 
