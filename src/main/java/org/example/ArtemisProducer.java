@@ -1,6 +1,7 @@
 package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,21 +25,30 @@ public class ArtemisProducer {
 
 	@SneakyThrows
 	@Transactional
-	public void send(Data data) {
+	public Optional<Message> send(Data data) {
 
 		if (!applicationContext.containsBean("jmsTemplate"))
-			return;
+			return Optional.empty();
 
 		String payload = mapper.writeValueAsString(data);
 
+		final CustomMessagePostProcessor messagePostProcessor = new CustomMessagePostProcessor();
+
 		try {
-			jmsTemplate.send(
+			jmsTemplate.convertAndSend(
 					"queue1",
-					new CustomMessageCreator(payload)
+					payload,
+					messagePostProcessor
 			);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
+
+		Message sendResult = messagePostProcessor.getSendResult();
+
+		log.info("sendResult = {}", sendResult);
+
+		return Optional.of(sendResult);
 
 	}
 

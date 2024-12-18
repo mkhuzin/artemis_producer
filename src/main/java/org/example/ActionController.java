@@ -1,5 +1,6 @@
 package org.example;
 
+import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -22,9 +25,9 @@ public class ActionController {
 
 		try {
 
-			artemisProducer.send(data);
+			Optional<Message> sendResult = artemisProducer.send(data);
 
-			return new ResponseEntity<>("message sent", HttpStatus.OK);
+			return new ResponseEntity<>(sendResult.toString(), HttpStatus.OK);
 
 		} catch (Exception exception) {
 
