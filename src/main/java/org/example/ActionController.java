@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -19,8 +18,7 @@ public class ActionController {
 
 	private final ArtemisProducer artemisProducer;
 
-	@PostMapping
-	@RequestMapping("/sendMessage")
+	@PostMapping("/sendMessage")
 	public ResponseEntity<String> publish(@RequestBody Data data) {
 
 		try {
