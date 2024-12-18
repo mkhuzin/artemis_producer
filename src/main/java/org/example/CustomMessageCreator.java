@@ -4,6 +4,7 @@ import jakarta.jms.BytesMessage;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.Session;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jms.core.MessageCreator;
 
@@ -12,6 +13,7 @@ public class CustomMessageCreator implements MessageCreator {
 
 	private final String payload;
 
+	@NonNull
 	@Override
 	public Message createMessage(Session session) throws JMSException {
 
