@@ -1,6 +1,5 @@
 package org.example;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -19,7 +18,7 @@ public class ArtemisProducer {
 
 	private final ApplicationContext applicationContext;
 
-	private final ObjectMapper mapper;
+	private final CustomMessagePostProcessor messagePostProcessor;
 
 	private final JmsTemplate jmsTemplate;
 
@@ -30,25 +29,21 @@ public class ArtemisProducer {
 		if (!applicationContext.containsBean("jmsTemplate"))
 			return Optional.empty();
 
-		String payload = mapper.writeValueAsString(data);
-
-		final CustomMessagePostProcessor messagePostProcessor = new CustomMessagePostProcessor();
-
 		try {
 			jmsTemplate.convertAndSend(
 					"queue1",
-					payload,
+					data,
 					messagePostProcessor
 			);
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("Error sending message", e);
 		}
 
 		Message sendResult = messagePostProcessor.getSendResult();
 
 		log.info("sendResult = {}", sendResult);
 
-		return Optional.of(sendResult);
+		return Optional.ofNullable(sendResult);
 
 	}
 

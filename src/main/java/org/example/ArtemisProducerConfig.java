@@ -2,6 +2,7 @@ package org.example;
 
 import jakarta.jms.JMSException;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,10 @@ import org.springframework.jms.core.JmsTemplate;
 @EnableJms
 @Configuration
 @ConditionalOnProperty("artemis.producer.auto-startup")
+@RequiredArgsConstructor
 public class ArtemisProducerConfig {
+
+	private final CustomMessageConverter messageConverter;
 
 	@Bean
 	public ActiveMQConnectionFactory connectionFactory() throws JMSException {
@@ -39,6 +43,8 @@ public class ArtemisProducerConfig {
 
 		jmsTemplate.setSessionTransacted(true);
 
+		jmsTemplate.setMessageConverter(messageConverter);
+
 		return jmsTemplate;
 
 	}
@@ -56,7 +62,7 @@ public class ArtemisProducerConfig {
 
 		containerFactory.setSessionTransacted(true);
 
-		containerFactory.setMessageConverter(new CustomMessageConverter());
+		containerFactory.setMessageConverter(messageConverter);
 
 		return containerFactory;
 
